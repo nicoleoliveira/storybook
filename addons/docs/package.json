@@ -123,6 +123,7 @@
   },
   "peerDependencies": {
     "@babel/core": "^7.11.5",
+    "@storybook/angular": "6.2.0-alpha.9",
     "@storybook/vue": "6.2.0-alpha.9",
     "babel-loader": "^8.0.0",
     "react": "^16.8.0 || ^17.0.0",
@@ -132,6 +133,9 @@
     "webpack": ">=4"
   },
   "peerDependenciesMeta": {
+    "@storybook/angular": {
+      "optional": true
+    },
     "@storybook/vue": {
       "optional": true
     },

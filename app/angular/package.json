@@ -70,11 +70,13 @@
     "@angular/compiler": "^11.0.0",
     "@angular/compiler-cli": "^11.0.0",
     "@angular/core": "^11.0.0",
+    "@angular/elements": "^11.0.5",
     "@angular/forms": "^11.0.0",
     "@angular/platform-browser": "^11.0.0",
     "@angular/platform-browser-dynamic": "^11.0.0",
     "@types/autoprefixer": "^9.4.0",
     "@types/jest": "^25.1.1",
+    "@webcomponents/custom-elements": "^1.4.3",
     "jest": "^26.0.0",
     "jest-preset-angular": "^8.3.2",
     "ts-jest": "^26.4.4"
@@ -86,6 +88,7 @@
     "@angular/compiler": ">=6.0.0",
     "@angular/compiler-cli": ">=6.0.0",
     "@angular/core": ">=6.0.0",
+    "@angular/elements": ">=6.0.0",
     "@angular/forms": ">=6.0.0",
     "@angular/platform-browser": ">=6.0.0",
     "@angular/platform-browser-dynamic": ">=6.0.0",
@@ -93,6 +96,14 @@
     "rxjs": "^6.0.0",
     "typescript": "^3.4.0 || >=4.0.0",
     "zone.js": "^0.8.29 || ^0.9.0 || ^0.10.0 || ^0.11.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/elements": {
+      "optional": true
+    },
+    "@webcomponents/custom-elements": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=8.0.0"
