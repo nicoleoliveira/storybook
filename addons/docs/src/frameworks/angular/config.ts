@@ -5,7 +5,7 @@ export const parameters = {
   docs: {
     extractArgTypes,
     extractComponentDescription,
-    inlineStories: false,
+    inlineStories: true,
     prepareForInline,
   },
 };
