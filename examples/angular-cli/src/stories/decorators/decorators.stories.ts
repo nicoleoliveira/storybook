@@ -13,6 +13,7 @@ export default {
     ),
   ],
   args: { childText: 'Child text', childPrivateText: 'Child private text' },
+  argTypes: { onClickChild: { action: 'onClickChild' } },
 } as Meta;
 
 export const WithTemplate = (args) => ({
@@ -44,6 +45,40 @@ export const WithComponentDecorator = (args) => ({
 WithComponentDecorator.decorators = [
   moduleMetadata({ declarations: [ParentComponent] }),
   componentDecorator(ParentComponent),
+];
+
+export const WithComponentDecoratorAndProps = (args) => ({
+  component: ChildComponent,
+  props: {
+    ...args,
+  },
+});
+WithComponentDecoratorAndProps.decorators = [
+  moduleMetadata({ declarations: [ParentComponent] }),
+  componentDecorator(ParentComponent, {
+    parentText: 'Parent text',
+    onClickParent: () => {
+      console.log('onClickParent');
+    },
+  }),
+];
+
+export const WithComponentDecoratorAndArgs = (args) => ({
+  component: ChildComponent,
+  props: {
+    ...args,
+  },
+});
+WithComponentDecoratorAndArgs.argTypes = {
+  parentText: { control: { type: 'text' } },
+  onClickParent: { action: 'onClickParent' },
+};
+WithComponentDecoratorAndArgs.decorators = [
+  moduleMetadata({ declarations: [ParentComponent] }),
+  componentDecorator(ParentComponent, (args) => ({
+    parentText: args.parentText,
+    onClickParent: args.onClickParent,
+  })),
 ];
 
 export const WithCustomDecorator = (args) => ({

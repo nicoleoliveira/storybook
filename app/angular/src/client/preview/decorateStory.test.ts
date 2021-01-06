@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output } from '@angular/core';
 import { DecoratorFunction, StoryContext } from '@storybook/addons';
 import { templateDecorator, componentDecorator } from './angular/decorators';
 
@@ -7,6 +7,77 @@ import { StoryFnAngularReturnType } from './types';
 
 describe('decorateStory', () => {
   describe('angular behavior', () => {
+    it('should use componentDecorator and templateDecorator with args', () => {
+      const decorators: DecoratorFunction<StoryFnAngularReturnType>[] = [
+        componentDecorator(ParentComponent, (args) => args),
+        templateDecorator(
+          (story) => `<grandparent [grandparentInput]="grandparentInput">${story}</grandparent>`,
+          (args) => args
+        ),
+        templateDecorator((story) => `<great-grandparent>${story}</great-grandparent>`),
+      ];
+      const decorated = decorateStory(() => ({ template: '</child>' }), decorators);
+
+      expect(
+        decorated(
+          makeContext({
+            parameters: { component: FooComponent },
+            args: {
+              parentInput: 'Parent input',
+              grandparentInput: 'grandparent input',
+              parentOutput: expect.any(Function),
+            },
+          })
+        )
+      ).toEqual({
+        props: {
+          parentInput: 'Parent input',
+          grandparentInput: 'grandparent input',
+          parentOutput: expect.any(Function),
+        },
+        template:
+          '<great-grandparent><grandparent [grandparentInput]="grandparentInput"><parent [parentInput]="parentInput" (parentOutput)="parentOutput($event)"></child></parent></grandparent></great-grandparent>',
+      });
+    });
+
+    it('should use componentDecorator and templateDecorator with input / output', () => {
+      const decorators: DecoratorFunction<StoryFnAngularReturnType>[] = [
+        componentDecorator(ParentComponent, {
+          parentInput: 'Parent input',
+          parentOutput: () => {},
+        }),
+        templateDecorator(
+          (story) => `<grandparent [grandparentInput]="grandparentInput">${story}</grandparent>`,
+          {
+            grandparentInput: 'Grandparent input',
+            sameInput: 'Should be override by story props',
+          }
+        ),
+        templateDecorator((story) => `<great-grandparent>${story}</great-grandparent>`),
+      ];
+      const decorated = decorateStory(
+        () => ({ template: '</child>', props: { sameInput: 'Story input' } }),
+        decorators
+      );
+
+      expect(
+        decorated(
+          makeContext({
+            parameters: { component: FooComponent },
+          })
+        )
+      ).toEqual({
+        props: {
+          parentInput: 'Parent input',
+          parentOutput: expect.any(Function),
+          grandparentInput: 'Grandparent input',
+          sameInput: 'Story input',
+        },
+        template:
+          '<great-grandparent><grandparent [grandparentInput]="grandparentInput"><parent [parentInput]="parentInput" (parentOutput)="parentOutput($event)"></child></parent></grandparent></great-grandparent>',
+      });
+    });
+
     it('should use componentDecorator and templateDecorator', () => {
       const decorators: DecoratorFunction<StoryFnAngularReturnType>[] = [
         componentDecorator(ParentComponent),
@@ -249,4 +320,10 @@ class FooComponent {}
   selector: 'parent',
   template: `<ng-content></ng-content>`,
 })
-class ParentComponent {}
+class ParentComponent {
+  @Input()
+  parentInput: string;
+
+  @Output()
+  parentOutput: any;
+}

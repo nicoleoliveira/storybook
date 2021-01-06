@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { Type } from '@angular/core';
-import { DecoratorFunction } from '@storybook/addons';
+import { Args, DecoratorFunction } from '@storybook/addons';
 import { computesTemplateFromComponent } from '../angular-beta/ComputesTemplateFromComponent';
-import { NgModuleMetadata, StoryFnAngularReturnType } from '../types';
+import { ICollection, NgModuleMetadata, StoryFnAngularReturnType } from '../types';
 
 export const moduleMetadata = (metadata: Partial<NgModuleMetadata>) => (storyFn: () => any) => {
   const story = storyFn();
@@ -25,18 +25,49 @@ export const moduleMetadata = (metadata: Partial<NgModuleMetadata>) => (storyFn:
 };
 
 export const componentDecorator = (
-  component: Type<unknown>
-): DecoratorFunction<StoryFnAngularReturnType> => (storyFn) => {
+  component: Type<unknown>,
+  props?: ICollection | ((args: Args) => ICollection)
+): DecoratorFunction<StoryFnAngularReturnType> => (storyFn, { args }) => {
   const story = storyFn();
-  const template = computesTemplateFromComponent(component, {}, story.template);
 
-  return { ...story, template };
+  const currentProps = typeof props === 'function' ? props(args) : props;
+
+  const template = computesTemplateFromComponent(component, currentProps, story.template);
+
+  // Combine props with the story one. Story props override decorator props, if happen
+  return {
+    ...story,
+    template,
+    ...(currentProps || story.props
+      ? {
+          props: {
+            ...currentProps,
+            ...story.props,
+          },
+        }
+      : {}),
+  };
 };
 
 export const templateDecorator = (
-  template: (story: string) => string
-): DecoratorFunction<StoryFnAngularReturnType> => (storyFn) => {
+  template: (story: string) => string,
+  props?: ICollection | ((args: Args) => ICollection)
+): DecoratorFunction<StoryFnAngularReturnType> => (storyFn, { args }) => {
   const story = storyFn();
 
-  return { ...story, template: template(story.template) };
+  const currentProps = typeof props === 'function' ? props(args) : props;
+
+  // Combine props with the story one. Story props override decorator props, if happen
+  return {
+    ...story,
+    template: template(story.template),
+    ...(currentProps || story.props
+      ? {
+          props: {
+            ...currentProps,
+            ...story.props,
+          },
+        }
+      : {}),
+  };
 };
